@@ -15,11 +15,11 @@ class ViewController: UIViewController {
         
         //let courses = [Course]()
         
-        var f = Future<[Course], Error>()
+        var f = Future<[Item], Error>()
         f = fetchCoursesJSON()
-        f.onSuccess { (courses) in
-            courses.forEach({ (course) in
-                print(course.name ?? "No name")
+        f.onSuccess { (items) in
+            items.forEach({ (item) in
+                print(item.title ?? "No name")
             })
         }
         f.onFailure { (err) in
@@ -51,11 +51,11 @@ class ViewController: UIViewController {
     }
 
     
-    func fetchCoursesJSON() -> Future<[Course], Error> {
+    func fetchCoursesJSON() -> Future<[Item], Error> {
         print("swift 5 with Future and Promise")
         //let f : Future<[Course],Error> = Future<[Course],Error>()
-        let p = Promise<[Course],Error>()
-        let urlString = URL(string: "https://api.letsbuildthatapp.com/jsondecodable/courses")
+        let p = Promise<[Item],Error>()
+        let urlString = URL(string: "https://my-json-server.typicode.com/sharonhiahia/sudoShopServer/items")
         
         if let url = urlString{
             URLSession.shared.dataTask(with: url) { (data, response, error) in
@@ -65,8 +65,8 @@ class ViewController: UIViewController {
                     return
                 }
                 do{
-                    let courses = try JSONDecoder().decode([Course].self,from: data!)
-                    p.success(courses)
+                    let items = try JSONDecoder().decode([Item].self,from: data!)
+                    p.success(items)
                 }catch let jsonError{
                     p.failure(jsonError)
                 }
