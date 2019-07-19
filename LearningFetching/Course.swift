@@ -12,9 +12,6 @@ import Foundation
 struct Course: Decodable{
     let id: Int?
     let name: String?
-    
     let imageUrl: String?
     let number_of_lessons: Int?
-    
-    
 }

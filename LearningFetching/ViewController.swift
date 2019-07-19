@@ -7,11 +7,25 @@
 //
 
 import UIKit
+import BrightFutures
 
 class ViewController: UIViewController {
-
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        //let courses = [Course]()
+        
+        var f = Future<[Course], Error>()
+        f = fetchCoursesJSON()
+        f.onSuccess { (courses) in
+            courses.forEach({ (course) in
+                print(course.name ?? "No name")
+            })
+        }
+        f.onFailure { (err) in
+            print(err)
+        }
+        
         
 //        fetchCoursesJSON { (res) in
 //            switch res {
@@ -36,6 +50,33 @@ class ViewController: UIViewController {
 //        }
     }
 
+    
+    func fetchCoursesJSON() -> Future<[Course], Error> {
+        print("swift 5 with Future and Promise")
+        //let f : Future<[Course],Error> = Future<[Course],Error>()
+        let p = Promise<[Course],Error>()
+        let urlString = URL(string: "https://api.letsbuildthatapp.com/jsondecodable/courses")
+        
+        if let url = urlString{
+            URLSession.shared.dataTask(with: url) { (data, response, error) in
+                if let err = error {
+                    //completion(.failure(err))
+                    p.failure(err)
+                    return
+                }
+                do{
+                    let courses = try JSONDecoder().decode([Course].self,from: data!)
+                    p.success(courses)
+                }catch let jsonError{
+                    p.failure(jsonError)
+                }
+            }.resume()
+        } else {
+            print("error converting url string to url")
+        }
+        return p.future
+    }
+    
     
 //    func fetchCoursesJSON(completion: @escaping (Result<[Course], Error>)->()){
 //        print("swift 5 with Result<[Course], Error>")
